@@ -166,6 +166,10 @@
                   <code>{{ this.typeMapping["banking.natwestCustomerNumber"]() }}</code>
                 </v-col>
                 <v-col sm="12" dense>
+                  RBS Customer Number:
+                  <code>{{ this.typeMapping["banking.rbsCustomerNumber"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
                   TSB User ID:
                   <code>{{ this.typeMapping["banking.tsbUserID"]() }}</code>
                 </v-col>
@@ -301,14 +305,27 @@ export default {
 
         // Banking Logins (UK)
         "banking.natwestCustomerNumber": () => {
-          return "hello, world";
+          let date = this.generator.date.past(60, new Date);
+          let day = date.getDate();
+          let month = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+          let year = date.getFullYear().toString().substr(-2);
+          let discriminator = `${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}`;
+          
+          return `${day}${month}${year}${discriminator}`;
         },
+        "banking.rbsCustomerNumber": () => {
+          // proxy - the values are the same
+          return this.typeMapping["banking.natwestCustomerNumber"]();
+        },
+
         "banking.tsbUserID": () => {
+          // TODO: find TSB username examples 
           return "hello, world";
         },
 
         // Banking Logins (USA)
         "banking.bankOfAmericaOnlineID": () => {
+          // TODO: generate a random "custom" user inputted username. 
           return "hello, world";
         },
       },
