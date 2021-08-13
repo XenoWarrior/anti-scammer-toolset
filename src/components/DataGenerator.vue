@@ -166,12 +166,26 @@
                   <code>{{ this.typeMapping["banking.natwestCustomerNumber"]() }}</code>
                 </v-col>
                 <v-col sm="12" dense>
+                  NatWest Password:
+                  <code>{{ this.typeMapping["banking.natwestPassword"]() }}</code>
+                </v-col>
+
+                <v-col sm="12" dense>
                   RBS Customer Number:
                   <code>{{ this.typeMapping["banking.rbsCustomerNumber"]() }}</code>
                 </v-col>
                 <v-col sm="12" dense>
+                  RBS Password:
+                  <code>{{ this.typeMapping["banking.rbsPassword"]() }}</code>
+                </v-col>
+
+                <v-col sm="12" dense>
                   TSB User ID:
                   <code>{{ this.typeMapping["banking.tsbUserID"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Password:
+                  <code>{{ this.typeMapping["banking.tsbPassword"]() }}</code>
                 </v-col>
                 
                 <v-col sm="12" dense>
@@ -313,14 +327,44 @@ export default {
           
           return `${day}${month}${year}${discriminator}`;
         },
+        "banking.natwestPassword": () => {
+          // Requirements:
+          // * Your Online Banking password must have between 6 and 20 characters, and contain both letters and numbers. 
+          // * We won't accept: hyphens, punctuation marks, or spaces
+          // * We won't accept: special characters such as @ or £
+          let password = this.generator.internet.password(this.generator.random.number(6, 20));
+          password = password.replace(/[^a-zA-Z ]/g, "");
+
+          if(password.length < 6) {
+            console.log("Password is less than 6 characters after removing special characters. Adding some randomness.");
+            while(password.length < 6) {
+              if(this.generator.random.boolean()) {
+                password += `${this.generator.random.digit()}`;
+              } else {
+                password += `${this.generator.random.letter()}`;
+              }
+            }
+          }
+          
+          return password;
+        },
+        
         "banking.rbsCustomerNumber": () => {
           // proxy - the values are the same
           return this.typeMapping["banking.natwestCustomerNumber"]();
         },
+        "banking.rbsPassword": () => {
+          // proxy - the values are the same
+          return this.typeMapping["banking.natwestPassword"]();
+        },
+        
 
         "banking.tsbUserID": () => {
-          // TODO: find TSB username examples 
-          return "hello, world";
+          return this.generator.internet.userName(this.generator.names.firstName(), this.generator.names.lastName())
+        },
+        "banking.tsbPassword": () => {
+          // proxy - the values are the same
+          return this.typeMapping["banking.natwestPassword"]();
         },
 
         // Banking Logins (USA)
@@ -369,8 +413,29 @@ export default {
           disabled: false,
         },
         {
-          text: `Bank of America: Online ID`,
-          value: "banking.bankOfAmericaOnlineID",
+          text: `NatWest: Password`,
+          value: "banking.natwestPassword",
+          disabled: false,
+        },
+
+        {
+          text: `RBS: Customer Number`,
+          value: "banking.rbsCustomerNumber",
+          disabled: false,
+        },
+        {
+          text: `RBS: Password`,
+          value: "banking.rbsPassword",
+          disabled: false,
+        },
+        {
+          text: `TSB: Customer Number`,
+          value: "banking.tsbCustomerNumber",
+          disabled: false,
+        },
+        {
+          text: `TSB: Password`,
+          value: "banking.tsbPassword",
           disabled: false,
         },
 
