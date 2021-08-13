@@ -97,8 +97,8 @@
 
       <v-row justify="center" cols="12">
         <v-col sm="10">
-          <v-btn block color="primary" dark @click="generateCsv()"
-            >Generate CSV</v-btn
+          <v-btn block color="primary" dark @click="exportFile()"
+            >Export File</v-btn
           >
         </v-col>
       </v-row>
@@ -294,7 +294,7 @@ export default {
       dialog: false,
       rowsToExport: null,
       generatedData: [],
-      csvFile: "",
+      exportableFile: "",
 
       useDelimiter: null,
       useEncoding: null,
@@ -475,6 +475,7 @@ export default {
       encodings: [
         { text: "UTF-8", value: "utf8" },
         { text: "UTF-16", value: "utf16" },
+        { text: "JSON", value: "json" },
       ],
       quotes: [
         { text: "Yes", value: true },
@@ -673,7 +674,8 @@ export default {
       }
       return bufView;
     },
-    generateCsv() {
+    exportFile() {
+      let ext = "";
       this.generatedData = [];
 
       for (let i = 0; i < this.rowsToExport; i++) {
@@ -694,23 +696,30 @@ export default {
         encoding: this.useEncoding,
       });
 
-      this.csvFile = parser.parse(this.generatedData);
 
       switch (this.useEncoding) {
         case "utf8":
-          this.csvFile = encodeURIComponent(this.csvFile);
+          this.exportableFile = encodeURIComponent(parser.parse(this.generatedData));
+          ext = "csv";
           break;
         case "utf16":
-          this.csvFile = this.strEncodeUTF16(this.csvFile);
+          this.exportableFile = this.strEncodeUTF16(parser.parse(this.generatedData));
+          ext = "csv";
+          break;
+        case "json":
+          this.exportableFile = JSON.stringify(this.generatedData);
+          ext = "json";
           break;
         default:
+          this.exportableFile = JSON.stringify(this.generatedData);
+          ext = "json";
           break;
       }
 
       var exportable = document.createElement("a");
-      exportable.href = "data:attachment/text," + this.csvFile;
+      exportable.href = "data:attachment/text," + this.exportableFile;
       exportable.target = "_blank";
-      exportable.download = "Exported.csv";
+      exportable.download = `Exported.${ext}`;
       exportable.click();
 
       exportable.remove();
