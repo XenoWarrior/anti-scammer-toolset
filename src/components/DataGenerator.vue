@@ -159,7 +159,7 @@
                 </v-col>
 
                 <v-col sm="12" dense>
-                  <h4>Banking (UK)</h4>
+                  <h4>NatWest (UK)</h4>
                 </v-col>
                 <v-col sm="12" dense>
                   NatWest Customer Number:
@@ -171,6 +171,9 @@
                 </v-col>
 
                 <v-col sm="12" dense>
+                  <h4>RBS (UK)</h4>
+                </v-col>
+                <v-col sm="12" dense>
                   RBS Customer Number:
                   <code>{{ this.typeMapping["banking.rbsCustomerNumber"]() }}</code>
                 </v-col>
@@ -180,12 +183,35 @@
                 </v-col>
 
                 <v-col sm="12" dense>
+                  <h4>TSB (UK)</h4>
+                </v-col>
+                <v-col sm="12" dense>
                   TSB User ID:
                   <code>{{ this.typeMapping["banking.tsbUserID"]() }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   TSB Password:
                   <code>{{ this.typeMapping["banking.tsbPassword"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Memorable Word:
+                  <code>{{ this.typeMapping["banking.tsbMemorableWord"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Memorable Character 1:
+                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Memorable Character 2:
+                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Memorable Character 3:
+                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB One Time Password:
+                  <code>{{ this.typeMapping["banking.tsbOneTimePassword"]() }}</code>
                 </v-col>
                 
                 <v-col sm="12" dense>
@@ -194,6 +220,18 @@
                 <v-col sm="12" dense>
                   Bank of America Online ID
                   <code>{{ this.typeMapping["banking.bankOfAmericaOnlineID"]() }}</code>
+                </v-col>
+                
+                <v-col sm="12" dense>
+                  <h4>Form Padding</h4>
+                </v-col>
+                <v-col sm="12" dense>
+                  Form Image X
+                  <code>{{ this.typeMapping["padding.FormImageX"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  Form Image Y
+                  <code>{{ this.typeMapping["padding.FormImageY"]() }}</code>
                 </v-col>
 
                 <v-col sm="12" dense>
@@ -262,7 +300,7 @@ export default {
       useEncoding: null,
       useQuotes: null,
 
-      generator: Fakerator("en-GB"),
+      generator: Fakerator(),
 
       typeMapping: {
         // Personal Names
@@ -296,6 +334,28 @@ export default {
         // Contact Details
         "contact.mobile": () => {
           return this.generator.phone.number();
+        },
+        "contact.ukMobile": () => {
+          let type = this.generator.random.number(1, 3);
+          let loop = 8;
+          let number = "";
+
+          switch(type) {
+            case 1: 
+              number += "07";
+              break;
+            case 2: 
+              number += "+447";
+              break;
+            case 3: 
+              number += "+44 7";
+              break;
+          }
+          for(let i = 0; i <= loop; i++) {
+            number += `${this.generator.random.digit()}`;
+          }
+
+          return number;
         },
         "contact.landline": () => {
           return this.generator.phone.number();
@@ -366,6 +426,39 @@ export default {
           // proxy - the values are the same
           return this.typeMapping["banking.natwestPassword"]();
         },
+        "banking.tsbMemorableWord": () => {
+          let type = this.generator.random.number(1, 3);
+          switch(type){
+            case 1: 
+              return this.generator.lorem.word();
+            case 2:
+              return this.generator.names.firstName();
+            case 3:
+              return this.generator.names.lastName();
+            case 4: 
+            return this.generator.address.streetName();
+          }
+        },
+        "banking.tsbMemorableCharacter": () => {
+          // &nbsp; for the specific target I am looking to spam
+          if(this.generator.random.boolean()) {
+            return `&nbsp;${this.generator.random.letter()}`;
+          } else {
+            return `&nbsp;${this.generator.random.letter().toUpperCase()}`;
+          }
+        },
+        "banking.tsbOneTimePassword": () => {
+          return `${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}`;
+        },
+
+        // Payload Padding
+        "padding.FormImageX": () => {
+          return this.generator.random.number(0, 120);
+        },
+
+        "padding.FormImageY": () => {
+          return this.generator.random.number(0, 60);
+        },
 
         // Banking Logins (USA)
         "banking.bankOfAmericaOnlineID": () => {
@@ -406,7 +499,7 @@ export default {
           disabled: false,
         },
 
-        { text: "Banking", disabled: true },
+        { text: "NatWest", disabled: true },
         {
           text: `NatWest: Customer Number`,
           value: "banking.natwestCustomerNumber",
@@ -418,6 +511,7 @@ export default {
           disabled: false,
         },
 
+        { text: "RBS", disabled: true },
         {
           text: `RBS: Customer Number`,
           value: "banking.rbsCustomerNumber",
@@ -428,9 +522,11 @@ export default {
           value: "banking.rbsPassword",
           disabled: false,
         },
+
+        { text: "TSB", disabled: true },
         {
           text: `TSB: Customer Number`,
-          value: "banking.tsbCustomerNumber",
+          value: "banking.tsbUserID",
           disabled: false,
         },
         {
@@ -438,6 +534,34 @@ export default {
           value: "banking.tsbPassword",
           disabled: false,
         },
+        {
+          text: `TSB: Memorable Word`,
+          value: "banking.tsbMemorableWord",
+          disabled: false,
+        },
+        {
+          text: `TSB: Memorable Character`,
+          value: "banking.tsbMemorableCharacter",
+          disabled: false,
+        },
+        {
+          text: `TSB: One Time Password`,
+          value: "banking.tsbOneTimePassword",
+          disabled: false,
+        },
+
+        { text: "Payload Data (Padding)", disabled: true },
+        {
+          text: `Form Image X`,
+          value: "padding.FormImageX",
+          disabled: false,
+        },
+        {
+          text: `Form Image Y`,
+          value: "padding.FormImageY",
+          disabled: false,
+        },
+
 
         { text: "Address", disabled: true },
         {
@@ -469,6 +593,11 @@ export default {
         {
           text: `Mobile Number`,
           value: "contact.mobile",
+          disabled: false,
+        },
+        {
+          text: `Mobile Number (UK)`,
+          value: "contact.ukMobile",
           disabled: false,
         },
         {
@@ -551,14 +680,12 @@ export default {
         let row = {};
 
         this.csvColumns.forEach((column) => {
+          console.log(column.type);
           row[column.name] = this.typeMapping[column.type]();
         });
 
-        console.log("Export", row);
         this.generatedData.push(row);
       }
-
-      console.log("Output data", this.generatedData);
 
       let parser = new Parser({
         fields: this.exportHeaders,
