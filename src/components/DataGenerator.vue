@@ -97,8 +97,8 @@
 
       <v-row justify="center" cols="12">
         <v-col sm="10">
-          <v-btn block color="primary" dark @click="generateCsv()"
-            >Generate CSV</v-btn
+          <v-btn block color="primary" dark @click="exportFile()"
+            >Export File</v-btn
           >
         </v-col>
       </v-row>
@@ -159,15 +159,59 @@
                 </v-col>
 
                 <v-col sm="12" dense>
-                  <h4>Banking (UK)</h4>
+                  <h4>NatWest (UK)</h4>
                 </v-col>
                 <v-col sm="12" dense>
                   NatWest Customer Number:
                   <code>{{ this.typeMapping["banking.natwestCustomerNumber"]() }}</code>
                 </v-col>
                 <v-col sm="12" dense>
+                  NatWest Password:
+                  <code>{{ this.typeMapping["banking.natwestPassword"]() }}</code>
+                </v-col>
+
+                <v-col sm="12" dense>
+                  <h4>RBS (UK)</h4>
+                </v-col>
+                <v-col sm="12" dense>
+                  RBS Customer Number:
+                  <code>{{ this.typeMapping["banking.rbsCustomerNumber"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  RBS Password:
+                  <code>{{ this.typeMapping["banking.rbsPassword"]() }}</code>
+                </v-col>
+
+                <v-col sm="12" dense>
+                  <h4>TSB (UK)</h4>
+                </v-col>
+                <v-col sm="12" dense>
                   TSB User ID:
                   <code>{{ this.typeMapping["banking.tsbUserID"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Password:
+                  <code>{{ this.typeMapping["banking.tsbPassword"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Memorable Word:
+                  <code>{{ this.typeMapping["banking.tsbMemorableWord"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Memorable Character 1:
+                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Memorable Character 2:
+                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB Memorable Character 3:
+                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  TSB One Time Password:
+                  <code>{{ this.typeMapping["banking.tsbOneTimePassword"]() }}</code>
                 </v-col>
                 
                 <v-col sm="12" dense>
@@ -176,6 +220,18 @@
                 <v-col sm="12" dense>
                   Bank of America Online ID
                   <code>{{ this.typeMapping["banking.bankOfAmericaOnlineID"]() }}</code>
+                </v-col>
+                
+                <v-col sm="12" dense>
+                  <h4>Form Padding</h4>
+                </v-col>
+                <v-col sm="12" dense>
+                  Form Image X
+                  <code>{{ this.typeMapping["padding.FormImageX"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  Form Image Y
+                  <code>{{ this.typeMapping["padding.FormImageY"]() }}</code>
                 </v-col>
 
                 <v-col sm="12" dense>
@@ -238,13 +294,13 @@ export default {
       dialog: false,
       rowsToExport: null,
       generatedData: [],
-      csvFile: "",
+      exportableFile: "",
 
       useDelimiter: null,
       useEncoding: null,
       useQuotes: null,
 
-      generator: Fakerator("en-GB"),
+      generator: Fakerator(),
 
       typeMapping: {
         // Personal Names
@@ -279,6 +335,28 @@ export default {
         "contact.mobile": () => {
           return this.generator.phone.number();
         },
+        "contact.ukMobile": () => {
+          let type = this.generator.random.number(1, 3);
+          let loop = 8;
+          let number = "";
+
+          switch(type) {
+            case 1: 
+              number += "07";
+              break;
+            case 2: 
+              number += "+447";
+              break;
+            case 3: 
+              number += "+44 7";
+              break;
+          }
+          for(let i = 0; i <= loop; i++) {
+            number += `${this.generator.random.digit()}`;
+          }
+
+          return number;
+        },
         "contact.landline": () => {
           return this.generator.phone.number();
         },
@@ -301,14 +379,90 @@ export default {
 
         // Banking Logins (UK)
         "banking.natwestCustomerNumber": () => {
-          return "hello, world";
+          let date = this.generator.date.past(60, new Date);
+          let day = date.getDate();
+          let month = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+          let year = date.getFullYear().toString().substr(-2);
+          let discriminator = `${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}`;
+          
+          return `${day}${month}${year}${discriminator}`;
         },
+        "banking.natwestPassword": () => {
+          // Requirements:
+          // * Your Online Banking password must have between 6 and 20 characters, and contain both letters and numbers. 
+          // * We won't accept: hyphens, punctuation marks, or spaces
+          // * We won't accept: special characters such as @ or £
+          let password = this.generator.internet.password(this.generator.random.number(6, 20));
+          password = password.replace(/[^a-zA-Z ]/g, "");
+
+          if(password.length < 6) {
+            console.log("Password is less than 6 characters after removing special characters. Adding some randomness.");
+            while(password.length < 6) {
+              if(this.generator.random.boolean()) {
+                password += `${this.generator.random.digit()}`;
+              } else {
+                password += `${this.generator.random.letter()}`;
+              }
+            }
+          }
+          
+          return password;
+        },
+        
+        "banking.rbsCustomerNumber": () => {
+          // proxy - the values are the same
+          return this.typeMapping["banking.natwestCustomerNumber"]();
+        },
+        "banking.rbsPassword": () => {
+          // proxy - the values are the same
+          return this.typeMapping["banking.natwestPassword"]();
+        },
+        
+
         "banking.tsbUserID": () => {
-          return "hello, world";
+          return this.generator.internet.userName(this.generator.names.firstName(), this.generator.names.lastName())
+        },
+        "banking.tsbPassword": () => {
+          // proxy - the values are the same
+          return this.typeMapping["banking.natwestPassword"]();
+        },
+        "banking.tsbMemorableWord": () => {
+          let type = this.generator.random.number(1, 3);
+          switch(type){
+            case 1: 
+              return this.generator.lorem.word();
+            case 2:
+              return this.generator.names.firstName();
+            case 3:
+              return this.generator.names.lastName();
+            case 4: 
+            return this.generator.address.streetName();
+          }
+        },
+        "banking.tsbMemorableCharacter": () => {
+          // &nbsp; for the specific target I am looking to spam
+          if(this.generator.random.boolean()) {
+            return `&nbsp;${this.generator.random.letter()}`;
+          } else {
+            return `&nbsp;${this.generator.random.letter().toUpperCase()}`;
+          }
+        },
+        "banking.tsbOneTimePassword": () => {
+          return `${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}`;
+        },
+
+        // Payload Padding
+        "padding.FormImageX": () => {
+          return this.generator.random.number(0, 120);
+        },
+
+        "padding.FormImageY": () => {
+          return this.generator.random.number(0, 60);
         },
 
         // Banking Logins (USA)
         "banking.bankOfAmericaOnlineID": () => {
+          // TODO: generate a random "custom" user inputted username. 
           return "hello, world";
         },
       },
@@ -321,6 +475,7 @@ export default {
       encodings: [
         { text: "UTF-8", value: "utf8" },
         { text: "UTF-16", value: "utf16" },
+        { text: "JSON", value: "json" },
       ],
       quotes: [
         { text: "Yes", value: true },
@@ -345,17 +500,69 @@ export default {
           disabled: false,
         },
 
-        { text: "Banking", disabled: true },
+        { text: "NatWest", disabled: true },
         {
           text: `NatWest: Customer Number`,
           value: "banking.natwestCustomerNumber",
           disabled: false,
         },
         {
-          text: `Bank of America: Online ID`,
-          value: "banking.bankOfAmericaOnlineID",
+          text: `NatWest: Password`,
+          value: "banking.natwestPassword",
           disabled: false,
         },
+
+        { text: "RBS", disabled: true },
+        {
+          text: `RBS: Customer Number`,
+          value: "banking.rbsCustomerNumber",
+          disabled: false,
+        },
+        {
+          text: `RBS: Password`,
+          value: "banking.rbsPassword",
+          disabled: false,
+        },
+
+        { text: "TSB", disabled: true },
+        {
+          text: `TSB: Customer Number`,
+          value: "banking.tsbUserID",
+          disabled: false,
+        },
+        {
+          text: `TSB: Password`,
+          value: "banking.tsbPassword",
+          disabled: false,
+        },
+        {
+          text: `TSB: Memorable Word`,
+          value: "banking.tsbMemorableWord",
+          disabled: false,
+        },
+        {
+          text: `TSB: Memorable Character`,
+          value: "banking.tsbMemorableCharacter",
+          disabled: false,
+        },
+        {
+          text: `TSB: One Time Password`,
+          value: "banking.tsbOneTimePassword",
+          disabled: false,
+        },
+
+        { text: "Payload Data (Padding)", disabled: true },
+        {
+          text: `Form Image X`,
+          value: "padding.FormImageX",
+          disabled: false,
+        },
+        {
+          text: `Form Image Y`,
+          value: "padding.FormImageY",
+          disabled: false,
+        },
+
 
         { text: "Address", disabled: true },
         {
@@ -387,6 +594,11 @@ export default {
         {
           text: `Mobile Number`,
           value: "contact.mobile",
+          disabled: false,
+        },
+        {
+          text: `Mobile Number (UK)`,
+          value: "contact.ukMobile",
           disabled: false,
         },
         {
@@ -462,21 +674,20 @@ export default {
       }
       return bufView;
     },
-    generateCsv() {
+    exportFile() {
+      let ext = "";
       this.generatedData = [];
 
       for (let i = 0; i < this.rowsToExport; i++) {
         let row = {};
 
         this.csvColumns.forEach((column) => {
+          console.log(column.type);
           row[column.name] = this.typeMapping[column.type]();
         });
 
-        console.log("Export", row);
         this.generatedData.push(row);
       }
-
-      console.log("Output data", this.generatedData);
 
       let parser = new Parser({
         fields: this.exportHeaders,
@@ -485,23 +696,30 @@ export default {
         encoding: this.useEncoding,
       });
 
-      this.csvFile = parser.parse(this.generatedData);
 
       switch (this.useEncoding) {
         case "utf8":
-          this.csvFile = encodeURIComponent(this.csvFile);
+          this.exportableFile = encodeURIComponent(parser.parse(this.generatedData));
+          ext = "csv";
           break;
         case "utf16":
-          this.csvFile = this.strEncodeUTF16(this.csvFile);
+          this.exportableFile = this.strEncodeUTF16(parser.parse(this.generatedData));
+          ext = "csv";
+          break;
+        case "json":
+          this.exportableFile = JSON.stringify(this.generatedData);
+          ext = "json";
           break;
         default:
+          this.exportableFile = JSON.stringify(this.generatedData);
+          ext = "json";
           break;
       }
 
       var exportable = document.createElement("a");
-      exportable.href = "data:attachment/text," + this.csvFile;
+      exportable.href = "data:attachment/text," + this.exportableFile;
       exportable.target = "_blank";
-      exportable.download = "Exported.csv";
+      exportable.download = `Exported.${ext}`;
       exportable.click();
 
       exportable.remove();
