@@ -102,14 +102,6 @@
           >
         </v-col>
       </v-row>
-
-      <v-row v-if="this.generatedData" justify="center" cols="12">
-        <v-col sm="10">
-          <v-btn block color="primary" dark @click="westaKrSpammer()"
-            >Spam WestaKR</v-btn
-          >
-        </v-col>
-      </v-row>
     </template>
     <template v-else>
       <v-row justify="center" cols="12">
@@ -274,6 +266,10 @@
                 <v-col sm="12" dense>
                   Email Address:
                   <code>{{ generator.internet.email() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  DOB YYYY-MM-DD:
+                  <code>{{ this.typeMapping["dob.yyyy-mm-dd"]() }}</code>
                 </v-col>
 
                 <v-col sm="12" dense>
@@ -498,6 +494,16 @@ export default {
           // TODO: generate a random "custom" user inputted username.
           return "hello, world";
         },
+
+        "dob.yyyy-mm-dd": () => {
+          let date = this.generator.date.past(60, new Date());
+          let day = date.getDate();
+          let month =
+            date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+          let year = date.getFullYear().toString().substr(-2);
+
+          return `${year}-${month}-${day}`;
+        }
       },
 
       delimiters: [
@@ -659,6 +665,11 @@ export default {
           value: "misc.uuid",
           disabled: false,
         },
+        {
+          text: `DOB YYYY-MM-DD`,
+          value: "dob.yyyy-mm-dd",
+          disabled: false,
+        },
       ],
 
       columnIncrement: 0,
@@ -676,37 +687,6 @@ export default {
     },
   },
   methods: {
-    //TODO: move spammer logic out of here and make it configurable, every scam website is different.
-    async westaKrSpammer() {
-      this.generatedData.forEach((item) => {
-        console.log(item);
-      });
-
-      let initialGet = await fetch(
-        "https://westa.kr/eyoom/misc/tsb/Login.php?sslchannel=true&form=AccountVerification",
-        {
-          headers: {
-            accept:
-              "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "accept-language": "en-GB,en;q=0.9,en-US;q=0.8",
-            "sec-ch-ua":
-              '"Chromium";v="92", " Not A;Brand";v="99", "Microsoft Edge";v="92"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-fetch-dest": "document",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "cross-site",
-            "sec-fetch-user": "?1",
-            "upgrade-insecure-requests": "1",
-          },
-          referrerPolicy: "strict-origin-when-cross-origin",
-          body: null,
-          method: "GET",
-          mode: "cors",
-          credentials: "include",
-        }
-      );
-      console.log(initialGet);
-    },
     addColumn() {
       this.csvColumns.push({
         id: this.columnIncrement,
