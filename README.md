@@ -1,5 +1,9 @@
-# PhishingFlooder
+# Anti Scammer Toolset (AST)
 I hate scam websites phishing for user details, so this bot (with some configuration) will send millions of fake records to the scammer's API to (hopefully) slow them down.
+
+# Tools
+* HTTP flooder + Data Generator (to take the shittest scam webservers down)
+* Pixel Tracker (for replying to scammers on email)
 
 # Branches
 * main - Will contain the latest stable release.
