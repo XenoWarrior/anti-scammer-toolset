@@ -102,6 +102,14 @@
           >
         </v-col>
       </v-row>
+
+      <v-row v-if="this.generatedData" justify="center" cols="12">
+        <v-col sm="10">
+          <v-btn block color="primary" dark @click="westaKrSpammer()"
+            >Spam WestaKR</v-btn
+          >
+        </v-col>
+      </v-row>
     </template>
     <template v-else>
       <v-row justify="center" cols="12">
@@ -163,11 +171,15 @@
                 </v-col>
                 <v-col sm="12" dense>
                   NatWest Customer Number:
-                  <code>{{ this.typeMapping["banking.natwestCustomerNumber"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.natwestCustomerNumber"]()
+                  }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   NatWest Password:
-                  <code>{{ this.typeMapping["banking.natwestPassword"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.natwestPassword"]()
+                  }}</code>
                 </v-col>
 
                 <v-col sm="12" dense>
@@ -175,7 +187,9 @@
                 </v-col>
                 <v-col sm="12" dense>
                   RBS Customer Number:
-                  <code>{{ this.typeMapping["banking.rbsCustomerNumber"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.rbsCustomerNumber"]()
+                  }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   RBS Password:
@@ -195,33 +209,45 @@
                 </v-col>
                 <v-col sm="12" dense>
                   TSB Memorable Word:
-                  <code>{{ this.typeMapping["banking.tsbMemorableWord"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.tsbMemorableWord"]()
+                  }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   TSB Memorable Character 1:
-                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.tsbMemorableCharacter"]()
+                  }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   TSB Memorable Character 2:
-                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.tsbMemorableCharacter"]()
+                  }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   TSB Memorable Character 3:
-                  <code>{{ this.typeMapping["banking.tsbMemorableCharacter"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.tsbMemorableCharacter"]()
+                  }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   TSB One Time Password:
-                  <code>{{ this.typeMapping["banking.tsbOneTimePassword"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.tsbOneTimePassword"]()
+                  }}</code>
                 </v-col>
-                
+
                 <v-col sm="12" dense>
                   <h4>Banking (USA)</h4>
                 </v-col>
                 <v-col sm="12" dense>
                   Bank of America Online ID
-                  <code>{{ this.typeMapping["banking.bankOfAmericaOnlineID"]() }}</code>
+                  <code>{{
+                    this.typeMapping["banking.bankOfAmericaOnlineID"]()
+                  }}</code>
                 </v-col>
-                
+
                 <v-col sm="12" dense>
                   <h4>Form Padding</h4>
                 </v-col>
@@ -340,18 +366,18 @@ export default {
           let loop = 8;
           let number = "";
 
-          switch(type) {
-            case 1: 
+          switch (type) {
+            case 1:
               number += "07";
               break;
-            case 2: 
+            case 2:
               number += "+447";
               break;
-            case 3: 
+            case 3:
               number += "+44 7";
               break;
           }
-          for(let i = 0; i <= loop; i++) {
+          for (let i = 0; i <= loop; i++) {
             number += `${this.generator.random.digit()}`;
           }
 
@@ -379,36 +405,41 @@ export default {
 
         // Banking Logins (UK)
         "banking.natwestCustomerNumber": () => {
-          let date = this.generator.date.past(60, new Date);
+          let date = this.generator.date.past(60, new Date());
           let day = date.getDate();
-          let month = date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+          let month =
+            date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
           let year = date.getFullYear().toString().substr(-2);
           let discriminator = `${this.generator.random.digit()}${this.generator.random.digit()}${this.generator.random.digit()}`;
-          
+
           return `${day}${month}${year}${discriminator}`;
         },
         "banking.natwestPassword": () => {
           // Requirements:
-          // * Your Online Banking password must have between 6 and 20 characters, and contain both letters and numbers. 
+          // * Your Online Banking password must have between 6 and 20 characters, and contain both letters and numbers.
           // * We won't accept: hyphens, punctuation marks, or spaces
           // * We won't accept: special characters such as @ or £
-          let password = this.generator.internet.password(this.generator.random.number(6, 20));
+          let password = this.generator.internet.password(
+            this.generator.random.number(6, 20)
+          );
           password = password.replace(/[^a-zA-Z ]/g, "");
 
-          if(password.length < 6) {
-            console.log("Password is less than 6 characters after removing special characters. Adding some randomness.");
-            while(password.length < 6) {
-              if(this.generator.random.boolean()) {
+          if (password.length < 6) {
+            console.log(
+              "Password is less than 6 characters after removing special characters. Adding some randomness."
+            );
+            while (password.length < 6) {
+              if (this.generator.random.boolean()) {
                 password += `${this.generator.random.digit()}`;
               } else {
                 password += `${this.generator.random.letter()}`;
               }
             }
           }
-          
+
           return password;
         },
-        
+
         "banking.rbsCustomerNumber": () => {
           // proxy - the values are the same
           return this.typeMapping["banking.natwestCustomerNumber"]();
@@ -417,10 +448,12 @@ export default {
           // proxy - the values are the same
           return this.typeMapping["banking.natwestPassword"]();
         },
-        
 
         "banking.tsbUserID": () => {
-          return this.generator.internet.userName(this.generator.names.firstName(), this.generator.names.lastName())
+          return this.generator.internet.userName(
+            this.generator.names.firstName(),
+            this.generator.names.lastName()
+          );
         },
         "banking.tsbPassword": () => {
           // proxy - the values are the same
@@ -428,20 +461,20 @@ export default {
         },
         "banking.tsbMemorableWord": () => {
           let type = this.generator.random.number(1, 3);
-          switch(type){
-            case 1: 
+          switch (type) {
+            case 1:
               return this.generator.lorem.word();
             case 2:
               return this.generator.names.firstName();
             case 3:
               return this.generator.names.lastName();
-            case 4: 
-            return this.generator.address.streetName();
+            case 4:
+              return this.generator.address.streetName();
           }
         },
         "banking.tsbMemorableCharacter": () => {
           // &nbsp; for the specific target I am looking to spam
-          if(this.generator.random.boolean()) {
+          if (this.generator.random.boolean()) {
             return `&nbsp;${this.generator.random.letter()}`;
           } else {
             return `&nbsp;${this.generator.random.letter().toUpperCase()}`;
@@ -462,7 +495,7 @@ export default {
 
         // Banking Logins (USA)
         "banking.bankOfAmericaOnlineID": () => {
-          // TODO: generate a random "custom" user inputted username. 
+          // TODO: generate a random "custom" user inputted username.
           return "hello, world";
         },
       },
@@ -563,7 +596,6 @@ export default {
           disabled: false,
         },
 
-
         { text: "Address", disabled: true },
         {
           text: `House Number`,
@@ -644,6 +676,37 @@ export default {
     },
   },
   methods: {
+    //TODO: move spammer logic out of here and make it configurable, every scam website is different.
+    async westaKrSpammer() {
+      this.generatedData.forEach((item) => {
+        console.log(item);
+      });
+
+      let initialGet = await fetch(
+        "https://westa.kr/eyoom/misc/tsb/Login.php?sslchannel=true&form=AccountVerification",
+        {
+          headers: {
+            accept:
+              "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "accept-language": "en-GB,en;q=0.9,en-US;q=0.8",
+            "sec-ch-ua":
+              '"Chromium";v="92", " Not A;Brand";v="99", "Microsoft Edge";v="92"',
+            "sec-ch-ua-mobile": "?0",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+          },
+          referrerPolicy: "strict-origin-when-cross-origin",
+          body: null,
+          method: "GET",
+          mode: "cors",
+          credentials: "include",
+        }
+      );
+      console.log(initialGet);
+    },
     addColumn() {
       this.csvColumns.push({
         id: this.columnIncrement,
@@ -682,7 +745,6 @@ export default {
         let row = {};
 
         this.csvColumns.forEach((column) => {
-          console.log(column.type);
           row[column.name] = this.typeMapping[column.type]();
         });
 
@@ -696,14 +758,17 @@ export default {
         encoding: this.useEncoding,
       });
 
-
       switch (this.useEncoding) {
         case "utf8":
-          this.exportableFile = encodeURIComponent(parser.parse(this.generatedData));
+          this.exportableFile = encodeURIComponent(
+            parser.parse(this.generatedData)
+          );
           ext = "csv";
           break;
         case "utf16":
-          this.exportableFile = this.strEncodeUTF16(parser.parse(this.generatedData));
+          this.exportableFile = this.strEncodeUTF16(
+            parser.parse(this.generatedData)
+          );
           ext = "csv";
           break;
         case "json":

@@ -2,7 +2,7 @@
     <v-app>
         <v-app-bar app color="primary" dark>
             <div class="d-flex align-center">
-                Phish Flooder
+                Anti Scammer Toolset
             </div>
         </v-app-bar>
 
