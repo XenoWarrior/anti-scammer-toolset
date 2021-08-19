@@ -143,11 +143,15 @@
                 </v-col>
                 <v-col sm="12" dense>
                   Street:
-                  <code>{{ generator.address.street() }}</code>
+                  <code>{{ generator.address.streetName() }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   City:
                   <code>{{ generator.address.city() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  State:
+                  <code>{{ this.typeMapping["contact.state"] }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   Postcode:
@@ -156,6 +160,14 @@
                 <v-col sm="12" dense>
                   Country:
                   <code>{{ generator.address.country() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  Gender
+                  <code>{{ this.typeMapping["contact.gender"]() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  DOB YYYY-MM-DD:
+                  <code>{{ this.typeMapping["dob.yyyy-mm-dd"]() }}</code>
                 </v-col>
 
                 <v-col sm="12" dense>
@@ -229,6 +241,12 @@
                     this.typeMapping["banking.tsbOneTimePassword"]()
                   }}</code>
                 </v-col>
+                <v-col sm="12" dense>
+                  Bank Account Type
+                  <code>{{
+                    this.typeMapping["banking.accountType"]()
+                  }}</code>
+                </v-col>
 
                 <v-col sm="12" dense>
                   <h4>Banking (USA)</h4>
@@ -267,10 +285,6 @@
                   Email Address:
                   <code>{{ generator.internet.email() }}</code>
                 </v-col>
-                <v-col sm="12" dense>
-                  DOB YYYY-MM-DD:
-                  <code>{{ this.typeMapping["dob.yyyy-mm-dd"]() }}</code>
-                </v-col>
 
                 <v-col sm="12" dense>
                   <h4>Random</h4>
@@ -286,6 +300,10 @@
                 <v-col sm="12" dense>
                   Random UUID:
                   <code>{{ generator.misc.uuid() }}</code>
+                </v-col>
+                <v-col sm="12" dense>
+                  Currency USD:
+                  <code>{{ this.typeMapping["currency.usd"]() }}</code>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -384,6 +402,10 @@ export default {
         },
         "contact.email": () => {
           return this.generator.internet.email();
+        },
+        "contact.gender": () => {
+          let type = this.generator.random.boolean();
+          return type ? "Male" : "Female";
         },
 
         // Random
@@ -500,10 +522,31 @@ export default {
           let day = date.getDate();
           let month =
             date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
-          let year = date.getFullYear().toString().substr(-2);
+          let year = date.getFullYear().toString();
 
           return `${year}-${month}-${day}`;
-        }
+        },
+        "currency.usd": () => {
+          return `USD`;
+        },
+        "banking.accountType": () => {
+          let types = [
+            "Savings",
+            "Current",
+            "Checking",
+            "Domiciliary",
+            "Offshore",
+            "Offshore Investment",
+            "Escrow",
+            "Fixed Deposit",
+          ];
+          let type = this.generator.random.number(0, types.length - 1);
+          return types[type];
+        },
+        "contact.state": () => {
+          let user = this.generator.entity.user();
+          return user.address.state;
+        },
       },
 
       delimiters: [
@@ -589,6 +632,11 @@ export default {
           value: "banking.tsbOneTimePassword",
           disabled: false,
         },
+        {
+          text: `Bank Account Type`,
+          value: "banking.accountType",
+          disabled: false,
+        },
 
         { text: "Payload Data (Padding)", disabled: true },
         {
@@ -619,6 +667,11 @@ export default {
           disabled: false,
         },
         {
+          text: `State`,
+          value: "contact.state",
+          disabled: false,
+        },
+        {
           text: `Postcode`,
           value: "address.postCode",
           disabled: false,
@@ -628,6 +681,7 @@ export default {
           value: "address.country",
           disabled: false,
         },
+
         { text: "Contact", disabled: true },
         {
           text: `Mobile Number`,
@@ -649,6 +703,17 @@ export default {
           value: "contact.email",
           disabled: false,
         },
+        {
+          text: `DOB YYYY-MM-DD`,
+          value: "dob.yyyy-mm-dd",
+          disabled: false,
+        },
+        {
+          text: `Gender`,
+          value: "contact.gender",
+          disabled: false,
+        },
+
         { text: "Random", disabled: true },
         {
           text: `Random Number`,
@@ -666,8 +731,8 @@ export default {
           disabled: false,
         },
         {
-          text: `DOB YYYY-MM-DD`,
-          value: "dob.yyyy-mm-dd",
+          text: `Currency USD`,
+          value: "currency.usd",
           disabled: false,
         },
       ],
