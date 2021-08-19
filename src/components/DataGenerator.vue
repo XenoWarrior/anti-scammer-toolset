@@ -151,7 +151,7 @@
                 </v-col>
                 <v-col sm="12" dense>
                   State:
-                  <code>{{ this.typeMapping["contact.state"] }}</code>
+                  <code>{{ this.typeMapping["contact.state"]() }}</code>
                 </v-col>
                 <v-col sm="12" dense>
                   Postcode:
