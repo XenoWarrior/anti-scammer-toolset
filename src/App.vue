@@ -1,29 +1,37 @@
 <template>
     <v-app>
         <v-app-bar app color="primary" dark>
-            <div class="d-flex align-center">
-                Phish Flooder
+            <div @click="goHome" class="d-flex align-center">
+                Anti Scammer Toolset
             </div>
         </v-app-bar>
 
         <v-main>
-            <DataGenerator />
+            <v-main>
+                <transition name="fade" mode="out-in">
+                    <router-view></router-view>
+                </transition>
+            </v-main>
         </v-main>
     </v-app>
 </template>
 
 <script>
-import DataGenerator from "./components/DataGenerator";
+    export default {
+        name: "App",
 
-export default {
-    name: "App",
+        components: {},
 
-    components: {
-        DataGenerator,
-    },
+        methods: {
+            goHome() {
+                this.$router.push({
+                    name: "home",
+                });
+            },
+        },
 
-    data: () => ({
-        //
-    }),
-};
+        data: () => ({
+            //
+        }),
+    };
 </script>

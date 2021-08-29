@@ -102,4 +102,6 @@ dist
 
 # TernJS port file
 .tern-port
-src/payloads/payload-*
+payloads/*.payload*
+payloads/ddos/*.job
+
